@@ -6,6 +6,7 @@ const PORT =  7000;
 app.use(cors());
 app.use(express.json());
 const projectsRouter = require('./projectsSchema');
+const messagesRouter = require('./messageSchema');
 app.get('/', (req, res) => {
     res.send('Welcome to the Profile API');
 }); 
@@ -34,10 +35,40 @@ app.post("/add", async (req, res) => {
     res.status(400).json({ message: error.message }); 
   }
 });
+app.post("/addMsg", async (req, res) => {
+  const { 
+    name,
+   email,
+    subject,
+    message,
+     } = req.body;
+  
+  try {
+    const newMsg = new messagesRouter({
+     name,
+   email,
+    subject,
+    message,
+    });
+    
+    await newMsg.save();
+    res.status(201).json(newMsg);
+  } catch (error) {
+    res.status(400).json({ message: error.message }); 
+  }
+});
 app.get("/projects", async (req, res) => {
   try {
     const projects = await projectsRouter.find();
     res.status(200).json(projects); 
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+});
+app.get("/messages", async (req, res) => {
+  try {
+    const messages = await messagesRouter.find();
+    res.status(200).json(messages); 
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
